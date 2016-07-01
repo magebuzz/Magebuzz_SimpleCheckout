@@ -1,0 +1,15 @@
+<?php 
+
+/*
+* Copyright (c) 2014 www.magebuzz.com
+*/
+
+?>
+<?php $delivery = $this->getDelivery();?>
+<?php if($delivery):?>
+  <address>
+    <p>Date :<?php echo $delivery->getDeliveryDate();?></p>
+    <p>Time :<?php echo $delivery->getDeliveryTime();?></p>
+    <p>Comment :<?php echo $delivery->getDeliveryComment();?></p>
+  </address>
+  <?php endif;?>

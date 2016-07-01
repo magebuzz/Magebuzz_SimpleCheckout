@@ -1,0 +1,11 @@
+<?php
+/*
+* Copyright (c) 2014 www.magebuzz.com
+*/
+$shipping_method_html = $this->getChildHtml('shipping_method');
+$payment_method_html = $this->getChildHtml('payment_method');
+$review_total_html = $this->getChildHtml('review_info');
+
+$result = array('shipping_method' => $shipping_method_html, 'payment_method' => $payment_method_html, 'order_review' => $review_total_html);
+
+echo Zend_Json::encode($result);

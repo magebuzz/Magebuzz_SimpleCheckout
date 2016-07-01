@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+  <simplecheckout_index_index>
+    <reference name="head">
+      <action method="addJs">
+        <script>magebuzz/simplecheckout/simplecheckout.js</script>
+      </action>
+      <block type="core/text" name="google.map.api">
+        <action method="setText" ifconfig="simplecheckout/general/auto_completed_address">
+          <text>
+            <![CDATA[<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>]]>
+          </text>
+        </action>
+      </block>
+      <!-- <action method="addCss">
+        <stylesheet>magebuzz/simplecheckout/css/simplecheckout-orange.css</stylesheet>
+      </action> -->
+      <action method="addCss">
+          <stylesheet helper="simplecheckout/appChooseStyle" />
+      </action>
+      <action method="addItem" ifconfig="simplecheckout/general/include_js">
+        <type>skin_js</type>
+        <name>magebuzz/simplecheckout/js/jquery-1.10.1.min.js</name>
+      </action>
+      
+      <action method="addItem" ifconfig="simplecheckout/deliverydate/enable_delivery">
+        <type>skin_js</type>
+        <name>magebuzz/simplecheckout/js/jquery-ui.js</name>
+      </action>
+      
+      <action method="addItem">
+        <type>skin_js</type>
+        <name>magebuzz/simplecheckout/js/jquery.fancybox.js</name>
+      </action>    
+      <action method="addCss">
+        <stylesheet>magebuzz/simplecheckout/css/fancybox/jquery.fancybox.css</stylesheet>
+      </action>
+      <action method="addCss" ifconfig="simplecheckout/deliverydate/enable_delivery">
+        <stylesheet>magebuzz/simplecheckout/css/jquery-ui.css</stylesheet>
+      </action>
+    </reference>
+    <reference name="root">
+      <action method="setTemplate">
+        <template>page/1column.phtml</template>
+      </action>
+    </reference>
+    <reference name="content">
+      <block type="simplecheckout/simplecheckout" name="simplecheckout" template="simplecheckout/simplecheckout.phtml">
+        <block type="simplecheckout/billing" name="simplecheckout.billing" as="billing"
+          template="simplecheckout/billing.phtml"/>
+
+        <!-- checkout with amazon-->
+        <block type="checkoutbyamazon/link" name="checkoutbyamazon.link.simplecheckout" as ="amazon_pament"
+               template="creativestyle/checkoutbyamazon/link.phtml"/>
+        <!-- end button checkout with amazon-->
+
+        <block type="simplecheckout/shipping" name="simplecheckout.shipping" as="shipping"
+          template="simplecheckout/shipping.phtml"/>
+
+        <block type="checkout/onepage_shipping_method_available" name="simplecheckout.shipping_method"
+          as="shipping_method" template="simplecheckout/shipping_method.phtml"/>
+
+        <block type="checkout/onepage_payment_methods" name="payment.methods" as="payment" template="simplecheckout/payment_method.phtml">
+          <action method="setMethodFormTemplate">
+            <method>purchaseorder</method>
+            <template>payment/form/purchaseorder.phtml</template>
+          </action>
+        </block>
+
+        <block type="checkout/onepage_review" name="checkout.onepage.review" as="review"
+          template="simplecheckout/review.phtml">
+          <block type="checkout/onepage_review_info" name="review_info" as="info"
+            template="simplecheckout/review/info.phtml">
+            <action method="addItemRender">
+              <type>default</type>
+              <block>checkout/cart_item_renderer</block>
+              <template>simplecheckout/review/item.phtml</template>
+            </action>
+            <action method="addItemRender">
+              <type>grouped</type>
+              <block>checkout/cart_item_renderer_grouped</block>
+              <template>simplecheckout/review/item.phtml</template>
+            </action>
+            <action method="addItemRender">
+              <type>configurable</type>
+              <block>checkout/cart_item_renderer_configurable</block>
+              <template>simplecheckout/review/item.phtml</template>
+            </action>
+            <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals"
+              template="simplecheckout/review/totals.phtml"/>
+          </block>
+        </block>
+      </block>
+    </reference>
+  </simplecheckout_index_index>
+  <simplecheckout_index_save_address>
+    <block output="toHtml" type="simplecheckout/reload" name="reload" as="reload"
+      template="simplecheckout/reload.phtml">
+      <block type="checkout/onepage_payment_methods" name="payment_method"
+        template="simplecheckout/payment_method.phtml" as="payment_method">
+        <action method="setMethodFormTemplate">
+          <method>purchaseorder</method>
+          <template>payment/form/purchaseorder.phtml</template>
+        </action>
+      </block>
+
+      <block type="checkout/onepage_shipping_method_available" name="shipping_method"
+        template="simplecheckout/shipping_method.phtml" as="shipping_method"/>
+
+      <block type="checkout/onepage_review_info" name="review_info" as="review_info"
+        template="simplecheckout/review/info.phtml">
+        <action method="addItemRender">
+          <type>default</type>
+          <block>checkout/cart_item_renderer</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <action method="addItemRender">
+          <type>grouped</type>
+          <block>checkout/cart_item_renderer_grouped</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <action method="addItemRender">
+          <type>configurable</type>
+          <block>checkout/cart_item_renderer_configurable</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals"
+          template="simplecheckout/review/totals.phtml"/>
+      </block>
+    </block>
+  </simplecheckout_index_save_address>
+  <simplecheckout_index_save_shipping_method>
+    <block output="toHtml" type="simplecheckout/reload" name="reload" as="reload"
+      template="simplecheckout/reload.phtml">
+      <block type="checkout/onepage_payment_methods" name="payment_method"
+        template="simplecheckout/payment_method.phtml" as="payment_method">
+        <action method="setMethodFormTemplate">
+          <method>purchaseorder</method>
+          <template>payment/form/purchaseorder.phtml</template>
+        </action>
+      </block>
+
+      <block type="checkout/onepage_review_info" name="review_info" as="review_info"
+        template="simplecheckout/review/info.phtml">
+        <action method="addItemRender">
+          <type>default</type>
+          <block>checkout/cart_item_renderer</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <action method="addItemRender">
+          <type>grouped</type>
+          <block>checkout/cart_item_renderer_grouped</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <action method="addItemRender">
+          <type>configurable</type>
+          <block>checkout/cart_item_renderer_configurable</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals"
+          template="simplecheckout/review/totals.phtml"/>
+      </block>
+    </block>
+  </simplecheckout_index_save_shipping_method>
+
+  <simplecheckout_index_login>
+    <remove name="right"/>
+    <remove name="left"/>
+    <block type="simplecheckout/reload" output="toHtml" name="root" template="simplecheckout/reload_login.phtml"/>
+  </simplecheckout_index_login>
+
+  <simplecheckout_index_use_point>
+    <block output="toHtml" type="simplecheckout/reload" name="reload" as="reload"
+      template="simplecheckout/reload.phtml">
+
+      <block type="checkout/onepage_review_info" name="review_info" as="review_info"
+        template="simplecheckout/review/info.phtml">
+        <action method="addItemRender">
+          <type>default</type>
+          <block>checkout/cart_item_renderer</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <action method="addItemRender">
+          <type>grouped</type>
+          <block>checkout/cart_item_renderer_grouped</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <action method="addItemRender">
+          <type>configurable</type>
+          <block>checkout/cart_item_renderer_configurable</block>
+          <template>simplecheckout/review/item.phtml</template>
+        </action>
+        <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals"
+          template="simplecheckout/review/totals.phtml"/>
+      </block>
+    </block>
+  </simplecheckout_index_use_point>
+
+  <simplecheckout_index_save_couponcode>
+    <block type="checkout/onepage_review_info" output="toHtml" name="review_info" as="review_info"
+      template="simplecheckout/review/info.phtml">
+      <action method="addItemRender">
+        <type>default</type>
+        <block>checkout/cart_item_renderer</block>
+        <template>simplecheckout/review/item.phtml</template>
+      </action>
+      <action method="addItemRender">
+        <type>grouped</type>
+        <block>checkout/cart_item_renderer_grouped</block>
+        <template>simplecheckout/review/item.phtml</template>
+      </action>
+      <action method="addItemRender">
+        <type>configurable</type>
+        <block>checkout/cart_item_renderer_configurable</block>
+        <template>simplecheckout/review/item.phtml</template>
+      </action>
+      <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals"
+        template="simplecheckout/review/totals.phtml"/>
+    </block>
+  </simplecheckout_index_save_couponcode>
+  <sales_order_print>
+    <reference name="sales.order.print">
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/print.phtml</template>
+      </action>
+    </reference>
+  </sales_order_print>
+  
+</layout> 

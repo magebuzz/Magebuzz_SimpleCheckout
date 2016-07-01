@@ -1,0 +1,339 @@
+<?xml version="1.0"?>
+<config>
+  <tabs>
+    <magebuzz translate="label">
+      <label>MageBuzz Add-ons</label>
+      <sort_order>200</sort_order>
+    </magebuzz>
+  </tabs>
+  <sections>
+    <simplecheckout module="simplecheckout" translate="label">
+      <class>separator-top</class>
+      <label>Simple Checkout</label>
+      <tab>magebuzz</tab>
+      <frontend_type>text</frontend_type>
+      <sort_order>100</sort_order>
+      <show_in_default>1</show_in_default>
+      <show_in_website>1</show_in_website>
+      <show_in_store>0</show_in_store>
+      <groups>
+        <general translate="label">
+          <label>General Information</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>1</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <enable_simplecheckout translate="label comment">
+              <label>Enable Simple Checkout</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </enable_simplecheckout>
+            <choose_style translate="label">
+              <label>Choose Style</label>
+              <frontend_type>select</frontend_type>
+              <source_model>simplecheckout/system_config_choosestyle</source_model>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>This is choose style simplecheckout</comment>
+            </choose_style>
+            <show_shipping_address translate="label comment">
+              <label>Enable to ship different shipping address</label>
+              <frontend_type>select</frontend_type>
+              <comment><![CDATA[If select no, ship to billing address]]></comment>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </show_shipping_address>
+            <enable_order_comment translate="label comment">
+              <label>Allow customer to write comment for order</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>4</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_order_comment>
+            <allow_guest_checkout translate="label comment">
+              <label>Allow Guest Checkout</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </allow_guest_checkout>
+            <include_js translate="label comment">
+              <label>Include jQuery</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>6</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment><![CDATA[Turn off jquery library if you already include it from another module]]></comment>
+            </include_js>
+            <auto_completed_address translate="label">
+              <label>Using Google API to complete Address</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>7</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </auto_completed_address>
+          </fields>
+        </general>
+        <default_fields translate="label comment">
+          <label>Default Data</label>
+          <comment><![CDATA[Set default data for address fields]]></comment>
+          <frontend_type>text</frontend_type>
+          <sort_order>1</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <country_id translate="label">
+              <label>Default Country</label>
+              <frontend_type>select</frontend_type>
+              <frontend_class>countries</frontend_class>
+              <source_model>adminhtml/system_config_source_country</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </country_id>
+            <region_id translate="label">
+              <label>Default Region/State</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </region_id>
+            <postcode translate="label">
+              <label>Default ZIP/Postal Code</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </postcode>
+            <city translate="label">
+              <label>Default City</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>4</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </city>
+            <shipping_method_id translate="label">
+              <label>Default Shipping Method</label>
+              <frontend_type>select</frontend_type>
+              <sort_order>5</sort_order>
+              <source_model>simplecheckout/system_config_shippingmethods</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </shipping_method_id>
+            <payment_method_id translate="label">
+              <label>Default Paymen Method</label>
+              <frontend_type>select</frontend_type>
+              <sort_order>6</sort_order>
+              <source_model>simplecheckout/system_config_paymentmethods</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </payment_method_id>
+          </fields>
+        </default_fields>
+        <ajax_update translate="label">
+          <label>Ajax update shipping/payment methods</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>4</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <enable_ajax translate="label">
+              <label>Enable Ajax save billing</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_ajax>
+            <ajax_fields translate="label">
+              <label>Billing fields to load Ajax</label>
+              <frontend_type>multiselect</frontend_type>
+              <source_model>simplecheckout/ajaxfields</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </ajax_fields>
+            <update_payment translate="label">
+              <label>Update payment methods</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </update_payment>
+          </fields>
+        </ajax_update>
+        <term_condition translate="label">
+          <label><![CDATA[Terms & Conditions]]></label>
+          <frontend_type>text</frontend_type>
+          <sort_order>5</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <enable_term_condition translate="label">
+              <label><![CDATA[Enable Terms & Conditions]]></label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_term_condition>
+            <condition_content translate="label comment">
+              <label><![CDATA[Content of terms & conditions]]></label>
+              <frontend_type>textarea</frontend_type>
+              <comment><![CDATA[HTML allowed]]></comment>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </condition_content>
+          </fields>
+        </term_condition>
+        <deliverydate translate="label">
+          <label>Delivery Settings</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>7</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <enable_delivery translate="label">
+              <label>Enable Delivery Time</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_delivery>        
+            <formatdate translate="label">
+              <label>Format Date</label>
+              <frontend_type>select</frontend_type>
+              <source_model>simplecheckout/system_config_delivery_formatdate</source_model>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>This format date will show in checkout page with customer</comment>
+            </formatdate>     
+            <number_period translate="label">
+              <label>Maximum Allowed Delivery Period (in weeks)</label>
+              <frontend_type>text</frontend_type>              
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>Choose maximum # of weeks customer may select delivery period within</comment>
+            </number_period>    
+            <weekend translate="label">
+              <label>Weekend Days (no delivery)</label>
+              <frontend_type>multiselect</frontend_type>
+              <source_model>adminhtml/system_config_source_locale_weekdays</source_model>
+              <sort_order>4</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </weekend>
+            <disableday translate="label">
+              <label>National Holidays (no delivery)</label>
+              <frontend_type>textarea</frontend_type>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>Enter off-shipping days with the format (mm/dd/yyyy), comma separated and no spaces</comment>
+            </disableday>           
+            <addtimerange translate="label">
+              <label>Time Range</label>
+              <frontend_model>simplecheckout/system_config_timerange</frontend_model>
+              <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+              <sort_order>6</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>Add Time Range with the format 24h (h:m), ex. 7:30.</comment>
+            </addtimerange>    
+
+            <timelimit translate="label">
+              <label>Delivery time-limit</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>7</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>Example: 5:00,13:00.Leave blank if you want disable this feature.Today delivery will be cut-off if it is later than this hour.</comment>
+            </timelimit>
+            <delinote translate="label">
+              <label>Delivery Note</label>
+              <frontend_type>textarea</frontend_type>
+              <sort_order>8</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>                            
+            </delinote>
+            <delicomment translate="label">
+              <label>Delivery comment example</label>
+              <frontend_type>textarea</frontend_type>
+              <sort_order>9</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>Enter a string,separate by @</comment>              
+            </delicomment>
+          </fields>
+        </deliverydate>
+        <coupon translate="lable" module="simplecheckout" >
+          <label>Coupon Settings</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>8</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <enable_coupon translate="label">
+              <label>Show coupon code in checkout page</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_coupon>
+          </fields>
+        </coupon>
+      </groups>
+    </simplecheckout>
+  </sections>
+</config>

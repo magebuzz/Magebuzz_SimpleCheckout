@@ -1,0 +1,267 @@
+<?php
+/*
+* Copyright (c) 2014 www.magebuzz.com
+*/
+?>
+
+<ul class="form-list">
+  <?php if ($this->customerHasAddresses()): ?>
+    <li class="wide">
+      <!--<label for="billing-address-select"><?php echo $this->__('Select a billing address from your address book or enter a new address.') ?></label>-->
+      <div class="input-box">
+        <?php echo $this->getAddressesHtmlSelect('billing') ?>
+      </div>
+    </li>
+  <?php endif; ?>
+  <?php $billing_data = $this->getBillingCheckoutData(); ?>
+  <li id="billing-new-address-form"<?php if ($this->customerHasAddresses()): ?> style="display:none;"<?php endif; ?>>
+    <input type="hidden" name="billing[address_id]" value="<?php echo $this->getAddress()->getId() ?>"
+           id="billing:address_id"/>
+    <ul>
+      <?php if ($this->getAddress()->getFirstname()): ?>
+        <?php $object = $this->getAddress() ?>
+      <?php else: ?>
+        <?php $object = $this->getQuote()->getCustomer() ?>
+      <?php endif; ?>
+      <?php if ($object->getFirstname() == '' && isset($billing_data['firstname'])): ?>
+        <?php
+        $object->setFirstname($billing_data['firstname']);
+        $object->setLastname($billing_data['lastname']);
+        ?>
+      <?php endif; ?>
+      <li
+        class="fields"><?php echo $this->getLayout()->createBlock('customer/widget_name')->setObject($object)->setFieldIdFormat('billing:%s')->setFieldNameFormat('billing[%s]')->toHtml() ?></li>
+      <li class="wide">
+        <div class="field">
+          <label for="billing:company"><?php echo $this->__('Company') ?></label>
+
+          <div class="input-box">
+            <input type="text" id="billing:company" name="billing[company]"
+                   value="<?php echo $billing_data ? $billing_data['company'] : $this->escapeHtml($this->getAddress()->getCompany()) ?>"
+                   title="<?php echo $this->__('Company') ?>" class="input-text"/>
+          </div>
+        </div>
+        <?php if (!$this->isCustomerLoggedIn()): ?>
+          <div class="field">
+            <label for="billing:email" class="required"><em>*</em><?php echo $this->__('Email Address') ?></label>
+
+            <div class="input-box">
+              <input type="text" name="billing[email]" id="billing:email"
+                     value="<?php echo $billing_data ? $billing_data['email'] : $this->escapeHtml($this->getAddress()->getEmail()) ?>"
+                     title="<?php echo $this->__('Email Address') ?>" class="input-text validate-email required-entry"/>
+            </div>
+          </div>
+        <?php endif ?>
+      </li>
+      <li class="wide">
+        <label for="billing:street1" class="required"><em>*</em><?php echo $this->__('Address') ?></label>
+
+        <div class="input-box">
+          <input type="text" title="<?php echo $this->__('Street Address') ?>" name="billing[street][]"
+                 id="billing:street1"
+                 value="<?php echo $billing_data ? $billing_data['street'][0] : $this->escapeHtml($this->getAddress()->getStreet(1)) ?>"
+                 class="input-text required-entry"/>
+        </div>
+      </li>
+      <?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
+        <li class="wide">
+          <label for="billing:street<?php echo $_i; ?>"><?php echo $this->__('Address %d', $_i) ?></label>
+
+          <div class="input-box">
+            <input type="text" title="<?php echo $this->__('Street Address %d', $_i) ?>" name="billing[street][]"
+                   id="billing:street<?php echo $_i ?>"
+                   value="<?php echo $billing_data ? $billing_data['street'][$_i - 1] : $this->escapeHtml($this->getAddress()->getStreet($_i)) ?>"
+                   class="input-text"/>
+          </div>
+        </li>
+      <?php endfor ?>
+      <li class="fields">
+        <div class="field">
+          <label for="billing:city" class="required"><em>*</em><?php echo $this->__('City') ?></label>
+
+          <div class="input-box">
+            <input type="text" title="<?php echo $this->__('City') ?>" name="billing[city]"
+                   value="<?php echo $billing_data ? $billing_data['city'] : $this->escapeHtml($this->getAddress()->getCity()) ?>"
+                   class="input-text required-entry" id="billing:city"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="billing:region_id" class="required"><em>*</em><?php echo $this->__('State/Province') ?></label>
+
+          <div class="input-box">
+            <select id="billing:region_id" name="billing[region_id]"
+                    title="<?php echo $this->__('State/Province') ?>" class="validate-select" style="display:none;">
+              <option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+            </select>
+            <script type="text/javascript">
+              //<![CDATA[
+              $('billing:region_id').setAttribute('defaultValue', "<?php echo $billing_data ? $billing_data['region_id'] : $this->getAddress()->getRegionId() ?>");
+              //]]>
+            </script>
+            <input type="text" id="billing:region" name="billing[region]"
+                   value="<?php echo $billing_data ? $billing_data['region'] : $this->escapeHtml($this->getAddress()->getRegion()) ?>"
+                   title="<?php echo $this->__('State/Province') ?>" class="input-text" style="display:none;"/>
+          </div>
+        </div>
+      </li>
+      <li class="fields">
+        <div class="field">
+          <label for="billing:postcode" class="required"><em>*</em><?php echo $this->__('Zip/Postal Code') ?></label>
+
+          <div class="input-box">
+            <input type="text" title="<?php echo $this->__('Zip/Postal Code') ?>" name="billing[postcode]"
+                   id="billing:postcode"
+                   value="<?php echo $billing_data ? $billing_data['postcode'] : $this->escapeHtml($this->getAddress()->getPostcode()) ?>"
+                   class="input-text validate-zip-international required-entry"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="billing:country_id" class="required"><em>*</em><?php echo $this->__('Country') ?></label>
+
+          <div class="input-box">
+            <?php echo $this->getCountryHtmlSelect('billing') ?>
+          </div>
+        </div>
+      </li>
+      <li class="fields">
+        <div class="field">
+          <label for="billing:telephone" class="required"><em>*</em><?php echo $this->__('Telephone') ?></label>
+
+          <div class="input-box">
+            <input type="text" name="billing[telephone]"
+                   value="<?php echo $billing_data ? $billing_data['telephone'] : $this->escapeHtml($this->getAddress()->getTelephone()) ?>"
+                   title="<?php echo $this->__('Telephone') ?>" class="input-text required-entry"
+                   id="billing:telephone"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="billing:fax"><?php echo $this->__('Fax') ?></label>
+
+          <div class="input-box">
+            <input type="text" name="billing[fax]"
+                   value="<?php echo $billing_data ? $billing_data['fax'] : $this->escapeHtml($this->getAddress()->getFax()) ?>"
+                   title="<?php echo $this->__('Fax') ?>" class="input-text" id="billing:fax"/>
+          </div>
+        </div>
+      </li>
+      <?php if (!$this->isCustomerLoggedIn()): ?>
+        <li class="fields" id="register-customer-password"
+            <?php if ($this->isAllowedGuestCheckout() && (!isset($billing_data['create_new_account']) || $billing_data['create_new_account'] != 1)): ?>style="display:none;"<?php endif; ?>>
+          <div class="field">
+            <label for="billing:customer_password" class="required"><em>*</em><?php echo $this->__('Password') ?>
+            </label>
+
+            <div class="input-box">
+              <input type="password" name="billing[customer_password]" id="billing:customer_password"
+                     title="<?php echo $this->__('Password') ?>" class="input-text required-entry validate-password"/>
+            </div>
+          </div>
+          <div class="field">
+            <label for="billing:confirm_password" class="required"><em>*</em><?php echo $this->__('Confirm Password') ?>
+            </label>
+
+            <div class="input-box">
+              <input type="password" name="billing[confirm_password]"
+                     title="<?php echo $this->__('Confirm Password') ?>" id="billing:confirm_password"
+                     class="input-text required-entry validate-cpassword"/>
+            </div>
+          </div>
+        </li>
+      <?php endif; ?>
+      <?php if ($this->isCustomerLoggedIn() && $this->customerHasAddresses()): ?>
+        <li class="control">
+          <input type="checkbox" name="billing[save_in_address_book]" value="1"
+                 title="<?php echo $this->__('Save in address book') ?>"
+                 id="billing:save_in_address_book" <?php if ($this->getAddress()->getSaveInAddressBook()): ?> checked="checked"<?php endif; ?>
+                 class="checkbox"/><label
+            for="billing:save_in_address_book"><?php echo $this->__('Save in address book') ?></label>
+        </li>
+      <?php else: ?>
+        <li class="no-display"><input type="hidden" name="billing[save_in_address_book]" value="1"/></li>
+      <?php endif; ?>
+    </ul>
+  </li>
+  <?php if (!$this->isCustomerLoggedIn()): ?>
+    <?php if ($this->isAllowedGuestCheckout()): ?>
+      <li class="control">
+        <input <?php if (isset($billing_data['create_new_account']) && $billing_data['create_new_account'] == 1): ?> checked <?php endif ?>
+          type="checkbox" name="billing[create_new_account]" value="1"
+          title="<?php echo $this->__('Create New Account') ?>" id="billing:create_new_account" class="checkbox"/><label
+          for="billing:create_new_account"><?php echo $this->__('Create New Account') ?></label>
+      </li>
+    <?php else: ?>
+      <input type="hidden" name="billing[create_new_account]" value="1"/>
+    <?php endif; ?>
+  <?php endif; ?>
+</ul>
+<input type="hidden" name="billing[use_for_shipping]" id="billing:use_for_shipping" value="1"/>
+
+<script type="text/javascript">
+  //<![CDATA[
+  //$('billing-address-select') && billing.newAddress(!$('billing-address-select').value);
+  var billingRegionUpdater = new RegionUpdater('billing:country_id', 'billing:region', 'billing:region_id', countryRegions, undefined, 'billing:postcode');
+
+  if ($('billing:create_new_account')) {
+    Event.observe('billing:create_new_account', 'click', function () {
+      if ($('billing:create_new_account').checked) {
+        $('register-customer-password').show();
+      }
+      else {
+        $('register-customer-password').hide();
+      }
+    });
+  }
+
+  if ($('billing-address-select')) {
+    Event.observe('billing-address-select', 'change', function () {
+      var isNew = $('billing-address-select').value ? false : true;
+      setNewAddress(isNew, 'billing', save_address_url);
+    });
+  }
+
+
+  /* auto-complete address using Google API*/
+  <?php if (Mage::getStoreConfig('simplecheckout/general/auto_completed_address')) :?>
+  var auto_complete_billing_address;
+
+  function initializeForBilling() {
+    // Create the autocomplete object, restricting the search
+    // to geographical location types.
+    auto_complete_billing_address = new google.maps.places.Autocomplete(
+      /** @type {HTMLInputElement} */(document.getElementById('billing:street1')),
+      { types: ['geocode'] });
+    // When the user selects an address from the dropdown,
+    // populate the address fields in the form.
+    google.maps.event.addListener(auto_complete_billing_address, 'place_changed', function () {
+      fillInBillingAddress();
+    });
+  }
+
+  function fillInBillingAddress() {
+    // Get the place details from the autocomplete object.
+    var billing_address = auto_complete_billing_address.getPlace();
+    billing_address.address_components.each(function (item) {
+      if (item) {
+        /* country */
+        if (item.types[0] == 'country') {
+          $('billing:country_id').value = item.short_name;
+          billingRegionUpdater.update();
+          save_address_information(save_address_url);
+        }
+
+        /* postal code */
+        if (item.types[0] == 'postal_code') {
+          $('billing:postcode').value = item.long_name;
+        }
+      }
+    });
+  }
+
+  document.observe("dom:loaded", function () {
+    initializeForBilling();
+  });
+
+  <?php endif;?>
+  /* end feature address auto-complete*/
+
+</script>

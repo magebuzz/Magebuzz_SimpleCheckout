@@ -1,0 +1,232 @@
+<?php
+/*
+* Copyright (c) 2014 www.magebuzz.com
+*/
+?>
+<?php $shipping_data = $this->getShippingCheckoutData(); ?>
+<?php if ($this->isShow()): ?>
+  <div class="shipping-address-option">
+    <input
+      class="checkbox" <?php if (isset($shipping_data['shipping_to_different_address']) && $shipping_data['shipping_to_different_address'] == 1): ?> checked<?php endif ?>
+      type="checkbox" name="shipping_to_different_address" id="shipping_to_different_address" value="1"/>
+    <label for="shipping_to_different_address"><?php echo $this->__('Ship to different address') ?></label>
+  </div>
+<?php endif; ?>
+<div class="sc-shipping-address" id="sc-shipping-address"
+     <?php if (!isset($shipping_data['shipping_to_different_address']) || $shipping_data['shipping_to_different_address'] != 1): ?>style="display:none;" <?php endif; ?>>
+<!--<h3><?php echo $this->__('Shipping Address'); ?></h3>-->
+<ul class="form-list">
+  <?php if ($this->customerHasAddresses()): ?>
+    <li class="wide">
+      <!--<label for="shipping-address-select"><?php echo $this->__('Select a shipping address from your address book or enter a new address.') ?></label>-->
+      <div class="input-box">
+        <?php echo $this->getAddressesHtmlSelect('shipping') ?>
+      </div>
+    </li>
+  <?php endif ?>
+  <li id="shipping-new-address-form"<?php if ($this->customerHasAddresses()): ?> style="display:none;"<?php endif; ?>>
+    <input type="hidden" name="shipping[address_id]" value="<?php echo $this->getAddress()->getId() ?>"
+           id="shipping:address_id"/>
+    <ul>
+      <?php $object = $this->getAddress(); ?>
+      <?php if ($object->getFirstname() == '' && $shipping_data): ?>
+        <?php $object->setFirstname($shipping_data['firstname']) ?>
+        <?php $object->setLastname($shipping_data['lastname']) ?>
+      <?php endif; ?>
+      <li
+        class="fields"><?php echo $this->getLayout()->createBlock('customer/widget_name')->setObject($object)->setFieldIdFormat('shipping:%s')->setFieldNameFormat('shipping[%s]')->toHtml() ?></li>
+      <li class="wide">
+        <div class="fields">
+          <label for="shipping:company"><?php echo $this->__('Company') ?></label>
+
+          <div class="input-box">
+            <input type="text" id="shipping:company" name="shipping[company]"
+                   value="<?php echo $shipping_data ? $shipping_data['company'] : $this->escapeHtml($this->getAddress()->getCompany()) ?>"
+                   title="<?php echo $this->__('Company') ?>" class="input-text"/>
+          </div>
+        </div>
+        <?php if (FALSE): ?>
+          <div class="fields">
+            <label for="shipping:email" class="required"><em>*</em><?php echo $this->__('Email Address') ?></label>
+
+            <div class="input-box">
+              <input type="text" name="shipping[email]" id="shipping:email"
+                     value="<?php echo $shipping_data ? $shipping_data['email'] : $this->escapeHtml($this->getAddress()->getEmail()) ?>"
+                     title="<?php echo $this->__('Email Address') ?>"
+                     class="input-text validate-email required-entry"/>
+            </div>
+          </div>
+        <?php endif ?>
+      </li>
+      <li class="wide">
+        <label for="shipping:street1" class="required"><em>*</em><?php echo $this->__('Address') ?></label>
+
+        <div class="input-box">
+          <input type="text" title="<?php echo $this->__('Street Address') ?>" name="shipping[street][]"
+                 id="shipping:street1"
+                 value="<?php echo $shipping_data ? $shipping_data['street'][0] : $this->escapeHtml($this->getAddress()->getStreet(1)) ?>"
+                 class="input-text required-entry"/>
+        </div>
+      </li>
+      <?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
+        <li class="wide">
+          <label for="shipping:street<?php echo $_i; ?>"><?php echo $this->__('Address %d', $_i) ?></label>
+
+          <div class="input-box">
+            <input type="text" title="<?php echo $this->__('Street Address %d', $_i) ?>" name="shipping[street][]"
+                   id="shipping:street<?php echo $_i ?>"
+                   value="<?php echo $shipping_data ? $shipping_data['street'][$_i - 1] : $this->escapeHtml($this->getAddress()->getStreet($_i)) ?>"
+                   class="input-text"/>
+          </div>
+        </li>
+      <?php endfor ?>
+      <li class="fields">
+        <div class="field">
+          <label for="shipping:city" class="required"><em>*</em><?php echo $this->__('City') ?></label>
+
+          <div class="input-box">
+            <input type="text" title="<?php echo $this->__('City') ?>" name="shipping[city]"
+                   value="<?php echo $shipping_data ? $shipping_data['city'] : $this->escapeHtml($this->getAddress()->getCity()) ?>"
+                   class="input-text required-entry" id="shipping:city"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="shipping:region_id" class="required"><em>*</em><?php echo $this->__('State/Province') ?></label>
+
+          <div class="input-box">
+            <select id="shipping:region_id" name="shipping[region_id]"
+                    title="<?php echo $this->__('State/Province') ?>" class="validate-select" style="display:none;">
+              <option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+            </select>
+            <script type="text/javascript">
+              //<![CDATA[
+              $('shipping:region_id').setAttribute('defaultValue', "<?php echo $shipping_data ? $shipping_data['region_id'] : $this->getAddress()->getRegionId() ?>");
+              //]]>
+            </script>
+            <input type="text" id="shipping:region" name="shipping[region]"
+                   value="<?php echo $shipping_data ? $shipping_data['region'] : $this->escapeHtml($this->getAddress()->getRegion()) ?>"
+                   title="<?php echo $this->__('State/Province') ?>" class="input-text" style="display:none;"/>
+          </div>
+        </div>
+      </li>
+      <li class="fields">
+        <div class="field">
+          <label for="shipping:postcode" class="required"><em>*</em><?php echo $this->__('Zip/Postal Code') ?></label>
+
+          <div class="input-box">
+            <input type="text" title="<?php echo $this->__('Zip/Postal Code') ?>" name="shipping[postcode]"
+                   id="shipping:postcode"
+                   value="<?php echo $shipping_data ? $shipping_data['postcode'] : $this->escapeHtml($this->getAddress()->getPostcode()) ?>"
+                   class="input-text validate-zip-international required-entry"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="shipping:country_id" class="required"><em>*</em><?php echo $this->__('Country') ?></label>
+
+          <div class="input-box">
+            <?php echo $this->getCountryHtmlSelect('shipping') ?>
+          </div>
+        </div>
+      </li>
+      <li class="fields">
+        <div class="field">
+          <label for="shipping:telephone" class="required"><em>*</em><?php echo $this->__('Telephone') ?></label>
+
+          <div class="input-box">
+            <input type="text" name="shipping[telephone]"
+                   value="<?php echo $shipping_data ? $shipping_data['telephone'] : $this->escapeHtml($this->getAddress()->getTelephone()) ?>"
+                   title="<?php echo $this->__('Telephone') ?>" class="input-text required-entry"
+                   id="shipping:telephone"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="shipping:fax"><?php echo $this->__('Fax') ?></label>
+
+          <div class="input-box">
+            <input type="text" name="shipping[fax]"
+                   value="<?php echo $shipping_data ? $shipping_data['fax'] : $this->escapeHtml($this->getAddress()->getFax()) ?>"
+                   title="<?php echo $this->__('Fax') ?>" class="input-text" id="shipping:fax"/>
+          </div>
+        </div>
+      </li>
+      <?php if ($this->isCustomerLoggedIn() && $this->customerHasAddresses()): ?>
+        <li class="control">
+          <input type="checkbox" name="shipping[save_in_address_book]" value="1"
+                 title="<?php echo $this->__('Save in address book') ?>"
+                 id="shipping:save_in_address_book" <?php if ($this->getAddress()->getSaveInAddressBook()): ?> checked="checked"<?php endif; ?>
+                 class="checkbox"/><label
+            for="shipping:save_in_address_book"><?php echo $this->__('Save in address book') ?></label>
+        </li>
+      <?php else: ?>
+        <li class="no-display"><input type="hidden" name="shipping[save_in_address_book]" value="1"/></li>
+      <?php endif; ?>
+    </ul>
+  </li>
+</ul>
+<script type="text/javascript">
+  var shippingRegionUpdater = new RegionUpdater('shipping:country_id', 'shipping:region', 'shipping:region_id', countryRegions, undefined, 'shipping:postcode');
+  Event.observe('shipping_to_different_address', 'click', function () {
+    if ($('shipping_to_different_address').checked) {
+      $('billing:use_for_shipping').value = '0';
+      $('sc-shipping-address').show();
+      save_address_information(save_address_url);
+    }
+    else {
+      $('billing:use_for_shipping').value = '1';
+      $('sc-shipping-address').hide();
+      save_address_information(save_address_url);
+    }
+  });
+
+  if ($('shipping-address-select')) {
+    Event.observe('shipping-address-select', 'change', function () {
+      var isNew = $('shipping-address-select').value ? false : true;
+      setNewAddress(isNew, 'shipping', save_address_url);
+    });
+  }
+
+  /* auto-complete address using Google API*/
+  <?php if (Mage::getStoreConfig('simplecheckout/general/auto_completed_address')) :?>
+  var auto_complete_shipping_address;
+
+  function initializeForShipping() {
+    // Create the autocomplete object, restricting the search
+    // to geographical location types.
+    auto_complete_shipping_address = new google.maps.places.Autocomplete(
+      /** @type {HTMLInputElement} */(document.getElementById('shipping:street1')),
+      { types: ['geocode'] });
+    // When the user selects an address from the dropdown,
+    // populate the address fields in the form.
+    google.maps.event.addListener(auto_complete_shipping_address, 'place_changed', function () {
+      fillInShippingAddress();
+    });
+  }
+
+  function fillInShippingAddress() {
+    // Get the place details from the autocomplete object.
+    var shipping_address = auto_complete_shipping_address.getPlace();
+    shipping_address.address_components.each(function (item) {
+      if (item) {
+        /* country */
+        if (item.types[0] == 'country') {
+          $('shipping:country_id').value = item.short_name;
+          shippingRegionUpdater.update();
+          save_address_information(save_address_url);
+        }
+
+        /* postal code */
+        if (item.types[0] == 'postal_code') {
+          $('shipping:postcode').value = item.long_name;
+        }
+      }
+    });
+  }
+
+  document.observe("dom:loaded", function () {
+    initializeForShipping();
+  });
+
+  <?php endif;?>
+  /* end feature address auto-complete*/
+</script>
+</div>

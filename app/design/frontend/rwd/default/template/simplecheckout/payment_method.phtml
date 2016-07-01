@@ -1,0 +1,223 @@
+<?php
+/*
+* Copyright (c) 2014 www.magebuzz.com
+*/
+$selected_method = $this->getLayout()->getBlockSingleton('simplecheckout/payment')->getSelectedMethodCode();
+?>
+<div class="checkout-payments">
+  <dl class="sp-methods" id="checkout-payment-method-load">
+    <?php
+    $methods = $this->getMethods();
+    $oneMethod = count($methods) <= 1;
+    ?>
+    <?php if (count($methods)): ?>
+      <?php
+      foreach ($methods as $_method):
+        $_code = $_method->getCode();
+        ?>
+        <dt>
+          <?php if (!$oneMethod): ?>
+            <input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]"
+                   title="<?php echo $_method->getTitle() ?>"
+                   onclick="save_shipping_method(false)"
+              <?php if ($selected_method == $_code): ?>
+                checked="checked"
+              <?php endif; ?>
+                   class="radio"/>
+
+          <?php else: ?>
+            <span class="no-display"><input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio"
+                                            name="payment[method]" checked="checked" class="radio"
+                                            onclick="save_shipping_method(false);"/></span>
+            <?php $oneMethod = $_code; ?>
+          <?php endif; ?>
+          <label
+            for="p_method_<?php echo $_code ?>"><?php echo $this->getMethodTitle($_method) ?> <?php echo $this->getMethodLabelAfterHtml($_method) ?></label>
+        </dt>
+        <?php if ($html = $this->getPaymentMethodFormHtml($_method)): ?>
+        <dd id="container_payment_method_<?php echo $_code; ?>" class="payment-method-form">
+          <?php echo $html; ?>
+        </dd>
+      <?php endif; ?>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <dt><?php echo $this->__('No Payment Methods'); ?></dt>
+    <?php endif; ?>
+  </dl>
+
+  <!-- Integrating with reward point -->
+  <?php if (Mage::helper('core')->isModuleEnabled('Magebuzz_Rewardpoint') && Mage::helper('core')->isModuleOutputEnabled('Magebuzz_Rewardpoint') && Mage::getStoreConfig('rewardpoint/general/enable_module')) : ?>
+    <?php
+    $methods = $this->getMethods();
+    $oneMethod = count($methods) <= 1;
+    $rate = Mage::helper('rewardpoint')->getPointToMoneyRate();
+    if ($rate) {
+      $pointRate = $rate->getPoints();
+      $moneyRate = $rate->getMoney();
+    }
+    $maximum = Mage::helper('rewardpoint')->getCurrentUserBalance();
+    $minimum = Mage::helper('rewardpoint')->getMinimumPointToRedeem();
+
+    $grandTotal = $this->getQuote()->getOriginalGrandTotal();
+
+    $session = Mage::getSingleton('checkout/session');
+    $use_rewardpoint = $session->getData('use_rewardpoint');
+    $number_of_point = $session->getData('number_of_point');
+    $oldPoint = $session->getData('number_of_point');
+    ?>
+
+    <?php if ($rate && $maximum > $minimum) : ?>
+    <dt style="clear:both;">
+      <input type="checkbox" id="use_rewardpoint" name="payment[use_rewardpoint]" onclick="show_hide()"/>
+      <label for="use_rewardpoint"><?php echo $this->__('Use %s', Mage::helper('rewardpoint')->getUnitName()) ?></label>
+    <div hidden="true" id="number_of_point_block" name="number_of_point_block">
+      <ul class="form-list">
+        <li class="field">
+          <label
+            for="number_of_point"><?php echo $this->__('Number of %s to use : ', Mage::helper('rewardpoint')->getUnitName()) ?></label>
+          <input type="text" id="number_of_point" name="payment[number_of_point]" class="validate-digits input-text"
+                 onkeyup="check()"/> <br/>
+          <span for="number_of_point" id="to_money"></span>
+          <?php if ($minimum > 0) : ?>
+            <br/><span
+              for="number_of_point"><?php echo $this->__('Minimum allowed : %s %s', $minimum, Mage::helper('rewardpoint')->getUnitName()) ?></span>
+          <?php else : ?>
+            <?php $minimum = 0 ?>
+          <?php endif; ?>
+          <br/><span
+            for="number_of_point"><?php echo $this->__('Your current balance : %s %s', Mage::helper('rewardpoint')->getCurrentUserBalance(), Mage::helper('rewardpoint')->getUnitName()) ?></span>
+        </li>
+      </ul>
+      <div class="button-set">
+        <button id="use-point-button" type="button" title="<?php echo $this->__('Use points') ?>" class="button right"
+                onclick="javascript:use_point_and_update()">
+          <span><span><span><?php echo $this->__('Use points') ?></span></span></span>
+        </button>
+      </div>
+    </div>
+    </dt>
+  <?php endif; ?>
+
+    <script type="text/javascript">
+      <?php if ($rate && $maximum > $minimum) : ?>
+      var use_point;
+      var number_of_point_block;
+      var number_of_point;
+      var value;
+      var pointRate = <?php echo $pointRate ?>;
+      var moneyRate = <?php echo $moneyRate ?>;
+      var minimum = <?php echo $minimum?>;
+      var maximum = <?php echo $maximum?>;
+      var max2 =
+      <?php echo $grandTotal ?> *
+      pointRate / moneyRate;
+      var currency_rate = <?php echo Mage::app()->getStore()->getCurrentCurrencyRate(); ?>;
+      var currency_symbol = '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol()?>';
+      if (maximum > max2) maximum = Math.ceil(max2);
+      use_point = $('use_rewardpoint');
+      number_of_point_block = $('number_of_point_block');
+      number_of_point = $('number_of_point');
+      use_point.enable();
+      number_of_point.enable();
+      <?php if($oldPoint > 0): ?>
+      use_point.checked = true;
+      number_of_point.value = <?php echo $oldPoint ?>;
+      <?php else :?>
+      use_point.checked = false;
+      <?php endif; ?>
+
+      <?php if ($use_rewardpoint): ?>
+      $('use_rewardpoint').checked = true;
+      $('number_of_point_block').hidden = false;
+      $('number_of_point').value = <?php echo $number_of_point; ?>
+        <?php endif; ?>
+
+        function show_hide() {
+          if ($('use_rewardpoint').checked == true) {
+            $('number_of_point').value = '';
+            <?php if($oldPoint > 0): ?>
+            $('number_of_point').value = <?php echo $oldPoint ?>;
+            <?php endif;?>
+            $('number_of_point_block').hidden = false;
+          }
+          else {
+            $('number_of_point_block').hidden = true;
+            var request = new Ajax.Request(
+              <?php echo "'".Mage::getUrl('simplecheckout/index/use_point')."'"; ?>,
+              {
+                onCreate: function () {
+                  $('checkout-review-load').update('<div class="ajax-loader" id="ajax-loader">&nbsp;</div>');
+                },
+                onSuccess: function (transport) {
+                  var data = transport.responseText.evalJSON();
+                  $('checkout-review-load').update(data.order_review);
+                },
+                parameters: {
+                  'use_rewardpoint': '0'
+                }
+              }
+            );
+          }
+        }
+
+      function check() {
+        value = parseInt($('number_of_point').value);
+        if (value >= 0) {
+          if (isNaN(value)) {
+            $('to_money').innerHTML = '<?php echo $this->__('Invalid Input') ?>';
+            $('use-point-button').disable();
+          }
+          else if (value < minimum) {
+            $('to_money').innerHTML = '<?php echo $this->__('Please use more') ?>';
+            $('use-point-button').disable();
+          }
+          else if (value > maximum) {
+            $('to_money').innerHTML = '<?php echo $this->__('Over your Balance or Subtotal') ?>';
+            $('use-point-button').disable();
+          }
+          else {
+            $('to_money').innerHTML = '<?php echo $this->__('Equal to ') ?>' + currency_symbol + value * moneyRate * currency_rate / pointRate;
+            $('use-point-button').enable();
+          }
+        }
+        else {
+          $('to_money').innerHTML = '<?php echo $this->__('Invalid Input') ?>';
+          $('use-point-button').disable();
+        }
+      }
+      <?php endif;?>
+      check();
+    </script>
+  <?php endif; ?>
+  <!-- end -->
+
+</div>
+
+<div class="tool-tip" id="payment-tool-tip" style="display:none;">
+  <div class="btn-close"><a href="#" id="payment-tool-tip-close"
+                            title="<?php echo $this->__('Close') ?>"><?php echo $this->__('Close') ?></a></div>
+  <div class="tool-tip-content"><img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>"
+                                     alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>"
+                                     title="<?php echo $this->__('Card Verification Number Visual Reference') ?>"/>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $$('#checkout-payment-method-load dt input').invoke('observe', 'click', function (e) {
+    var element = e.element();
+    var name = 'payment_form_' + element.value;
+
+    /* Hide all other forms */
+    $$('dd.payment-method-form').invoke('hide');
+
+    if (element.checked) {
+      var form = $(name);
+      var container = $('container_payment_method_' + element.value);
+
+      if (element !== null && container !== null) {
+        container.show();
+        $(name).show();
+      }
+    }
+  });
+</script>

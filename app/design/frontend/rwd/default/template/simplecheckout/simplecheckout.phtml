@@ -1,0 +1,465 @@
+<?php
+  /*
+  * Copyright (c) 2014 www.magebuzz.com
+  * @author: Magebuzz
+  * Main page of simple checkout
+  * Here we will load all necessary steps
+  */
+?>
+<?php $helper = Mage::helper('simplecheckout');
+  $timeRagger = $helper->getTimeRagge();
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="simplecheckout clearfix">
+  <div class="page-title">
+    <h2><?php echo $this->__('Simple Checkout'); ?></h2>
+  </div>
+  <p class="subtitle"><?php echo $this->__('Please fill in the fields below and click Place order to complete  your purchase!');?></p>
+  <?php if (!$this->isCustomerLoggedIn()): ?>
+    <div class="login-link">
+      <p class="f-left"><?php echo $this->__('Already have an account? ') ?> <a class="sc-login-link" href="#login-form-popup"
+          title=""><?php echo $this->__('Click here to Log in.') ?></a>
+      </p>
+      <div class="amazon-als">
+        <?php echo $this->getChildHtml('checkoutbyamazon.link.simplecheckout');?>
+      </div>
+      <script type="text/javascript">
+        jQuery(document).ready(function () {
+          jQuery('.sc-login-link').fancybox();
+        });
+      </script>
+    </div>
+    <?php endif; ?>
+  <script type="text/javascript" src="<?php echo $this->getJsUrl('varien/accordion.js') ?>"></script>
+  <script type="text/javascript">countryRegions = <?php echo $this->helper('directory')->getRegionJson() ?></script>
+  <form id="simplecheckout-form" method="post"
+    action="<?php echo $this->getUrl('*/*/save_order', array('_secure' => TRUE)); ?>">
+    <div class="sc-col2-set">
+      <div class="col1">
+        <div class="sc-billing-address">
+          <h3 class="number"><span class="nb-stt"><?php echo $this->__('1');?></span><span class="text"><?php echo $this->__('Billing Address'); ?></span></h3>
+          <?php echo $this->getChildHtml('billing'); ?>
+        </div>
+        <?php if ($helper->isDifferentShippingAddress()): ?>
+          <?php echo $this->getChildHtml('shipping'); ?>
+          <?php endif; ?>
+      </div>
+      <div class="col2">
+        <div class="col2-content">
+          <div class="col2-top">
+            <div class="col-1">
+              <?php if ($this->isShowShippingMethod()): ?>
+                <div class="f-left">
+                  <div class="shipping-method">
+                    <h3 class="number"><span class="nb-stt"><?php echo $this->__('2');?></span><span class="text"><?php echo $this->__('Shipping Method'); ?></span></h3>
+                    <div id="shipping-method-load">
+                      <?php echo $this->getChildHtml('shipping_method'); ?>
+                    </div>
+                  </div>
+                </div>
+              <?php endif; ?>
+              <div class="f-left">
+                <?php
+                  $stt1 = '';
+                  if ($this->isShowShippingMethod()){
+                    $stt1 = 3;
+                  }else{
+                    $stt1 = 2;
+                  }
+                ?>
+                <div class="payment-method">
+                  <h3 class="number"><span class="nb-stt"><?php echo $stt1; ?></span><span class="text"><?php echo $this->__('Payment Method'); ?></span></h3>
+                  <div id="payment-method-load">
+                    <?php echo $this->getChildHtml('payment'); ?>
+                    <?php echo $this->getChildHtml('amazon_pament'); ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2<?php if (!$this->isShowShippingMethod() && !$helper->isEnableDelivery()): ?> no-shipping<?php endif ?>">
+              <!-- Delivery Method -->
+              <?php if($helper->isEnableDelivery()):?>
+                <div class="f-left">
+                  <div id="delivery" class="delivery">
+                    <h3 class="number"><span class="nb-stt"><?php echo $this->__('4');?></span><span class="text"><?php echo $this->__('Delivery Time'); ?></span></h3> 
+                    <div class="mw-osc-block-content">
+                      <div id="delivery_date_load">
+                        <ul class="form-list">
+                          <li>
+                            <div id="input-box">                  
+                              <p><label class="required" for="delivery[date]"><?php echo $this->__('Date');?><em>*</em></label><input type="text" class="input-text required-entry" id="datepicker" name="delivery[date]"></p>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div id="timex">
+                      <div id="changedate">
+                        <div class="blockdate">
+                          <label><?php echo $this->__('Time:');?> </label>         
+                        </div>          
+                      </div>        
+                      <?php 
+                        $mydate=date('d/m/Y', Mage::getModel('core/date')->timestamp(time()));
+                        $time= $timeRagger;
+                        $slotime = array();
+                        if(isset($time)){
+                          $arraytime=unserialize($time);
+                          foreach($arraytime as $time=>$timerange){
+                            $disableTimeForDay = $timerange['disabled_time_for_day'];
+                            if($timerange['disabled_time_slot'] == 'on'){
+    //													if (strpos($disableTimeForDay,$deliveryDate) !== false) {
+                                continue;
+    //													}
+                            }
+
+                            $s_l=array();
+                            $s_l['slot']=implode("-",array($timerange['starttime'],$timerange['endtime']));              
+                            $slotime[] = $s_l;
+                          }  
+                        }                          
+                      ?>
+                      <?php if(count($slotime)>0):?>
+                        <div class="-deltime">
+                          <select id="delivery-timerange" class="validate-select" size="1" name="delivery[timerange]" >
+                            <option value=""><?php echo $this->__('Time Range');?></option>
+                            <?php foreach($slotime as $slot):?>              
+                              <option value="<?php echo $slot['slot']?>"><?php echo $slot['slot']?></option>                                                    
+                              <?php endforeach?>
+                          </select>
+                        </div>
+                        <?php endif;?>          
+                    </div>
+                    <!--   Comment   -->
+                    <div class="delivery-comments">
+                      <label for="id_comments" class="required"><em style="color:red;">* </em><?php echo $this->__('Delivery comments:  ');?> 
+                      </label>
+                      <?php           
+                        $comments = explode('@',Mage::getStoreConfig("simplecheckout/deliverydate/delicomment"));               
+                      ?>
+                      <select name="comment_eg" id="comment_eg" onchange="selectMessage();" title="Comment">  
+                        <option value=""><?php echo $this->__('-Select a quick delivery note-')?></option>            
+                        <?php foreach ($comments as $mes):?> 
+                          <?php if($mes !=""):?>                           
+                            <option value="<?php echo $mes;?>"><?php echo $mes; ?></option>            
+                            <?php endif;?>
+                          <?php endforeach; ?>
+                      </select>
+                      <br/>
+                      <textarea id="id_comments" class="required-entry" rows="4" cols="30" name="delivery[comments]" ></textarea>      
+                    </div>
+                    <div class="delivery-comments-note">
+                      <p><i><?php echo Mage::getStoreConfig("simplecheckout/deliverydate/delinote");?></i></p>
+                    </div>
+                    <!--End comment-->
+                  </div>  
+                </div>  
+                <?php endif;?>
+              <!-- End Delivery -->
+              <!-- Discount Coupon Code-->
+              <?php if(Mage::helper('simplecheckout')->isEnabledCoupon()): ?>
+              <?php
+                $stt = '';
+                $class = '';
+                if($helper->isEnableDelivery()){
+                  $stt = 5;
+                }else{
+                  $stt = 4;
+                  $class = 'no-delivery';
+                }
+              ?>
+                <div class="f-left">
+                  <div class="discount <?php echo $class; ?>">
+                    <h3 class="number"><span class="nb-stt"><?php echo $stt; ?></span><span class="text"><?php echo $this->__('Coupon code'); ?></span></h3>
+                    <div class="discount-form">
+                      <label for="coupon_code"><?php echo $this->__('Coupon code') ?></label>
+                      <input type="hidden" name="remove" id="remove-coupone" value="0"/>
+                      <div class="field-wrapper">
+                        <ul>
+                          <li class="first">
+                            <input class="input-text input-coupon-code" type="text" id="coupon_code" name="coupon_code"
+                              value="<?php echo $this->escapeHtml($this->getCouponCode()) ?>"/>
+                              <div style="font-size:12px;" id="coupon_code_message"></div>
+                              <button <?php if ($this->getCouponCode()): ?>style="display: none;" <?php endif; ?> type="button" title="<?php echo $this->__('Apply Coupon') ?>" id="apply_couponcode" class="button" onclick="updateCouponCode();" value="<?php echo $this->__('Apply Coupon') ?>">
+                                <span><span><?php echo $this->__('Apply Coupon') ?></span></span></button>
+                              <button id="cancel_couponcode" type="button"
+                                <?php if (!$this->getCouponCode()): ?>style="display: none;" <?php endif; ?>
+                                title="<?php echo $this->__('Cancel Coupon') ?>" class="button cancel-coupon"
+                                onclick="cancelCouponcode();" value="<?php echo $this->__('Cancel Coupon') ?>">
+                                <span><span><?php echo $this->__('Cancel Coupon') ?></span></span></button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <?php endif; ?>
+                <!-- End Coupon Code-->
+            </div>
+          </div>
+          <div class="sc-order-review">
+            <h3 class="number"><span class="nb-stt"></span><span class="text"><?php echo $this->__('Order Review'); ?></span><p id="ajax_loading_updateqty"></p></h3>
+            <?php echo $this->getChildHtml('review'); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div id="login-form-popup" name="login-popup" style="display:none;">
+  <div class="sc-login-form-popup">
+    <div class="login-result-message" id="login-result-message"></div>
+    <div class="login-fields" id="login-field-load">
+      <div id="login-form-ajax" style="display:none;">&nbsp;</div>
+      <form method="post" name="mini-login-form" id="mini-login-form">
+        <ul class="form-list">
+          <li class="fields">
+            <div class="field">
+              <label for="mini-username" class="required"><em>*</em><?php echo $this->__('Email Address'); ?></label>
+
+              <div class="input-box">
+                <input name="login[username]" id="mini-username" title="<?php echo $this->__('Email Address') ?>"
+                  value="" class="input-text required-entry" type="text"/>
+              </div>
+            </div>
+            <div class="field">
+              <label for="mini-password" class="required"><em>*</em><?php echo $this->__('Password'); ?></label>
+
+              <div class="input-box">
+                <input type="password" name="login[password]" id="mini-password"
+                  title="<?php echo $this->__('Password'); ?>" value="" class="input-text required-entry"
+                  type="text"/>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="actions">
+          <button class="button right" id="login-form-button" type="button">
+            <span><span><?php echo $this->__('Log In'); ?></span></span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  //<![CDATA[
+  var save_address_url = '<?php echo $this->getUrl("*/*/save_address", array('_secure' => TRUE))?>';
+  var url_update_coupon_code = '<?php echo $this->getUrl("*/*/save_couponcode", array('_secure' => TRUE))?>';
+  var save_shipping_method_url = '<?php echo $this->getUrl("*/*/save_shipping_method", array('_secure' => TRUE)); ?>';
+  var login_user_url = '<?php echo $this->getUrl('*/*/login', array('_secure' => TRUE))?>';
+  var use_point_url = '<?php echo $this->getUrl('*/*/use_point', array('_secure' => TRUE))?>';
+  var isUpdatePayment = <?php echo $helper->isUpdatePayment() ? 'true' : 'false' ?>;
+  var showShippingMethod = <?php echo $this->isShowShippingMethod() ? 'true' : 'false' ?>;
+
+  var form = $('simplecheckout-form');
+
+  /* Highlight selected payment method if one set */
+  if ($RF(form, 'payment[method]') != null) {
+    try {
+      var payment_method = $RF(form, 'payment[method]');
+      $('container_payment_method_' + payment_method).show();
+      $('payment_form_' + payment_method).show();
+    } catch (err) {
+
+    }
+  }
+
+  <?php if ($helper->enableSaveBilling()):?>
+    <?php if ($this->isEnabledField('country')):?>
+      Event.observe('billing:country_id', 'change', function () {
+        save_address_information(save_address_url);
+      });
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('country')):?>
+      if ($('shipping:country_id')) {
+        Event.observe('shipping:country_id', 'change', function () {
+          save_address_information(save_address_url);
+        });
+      }
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('city')):?>
+      Event.observe('billing:city', 'change', function () {
+        save_address_information(save_address_url);
+      });
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('city')):?>
+      if ($('shipping:city')) {
+        Event.observe('shipping:city', 'change', function () {
+          save_address_information(save_address_url);
+        });
+      }
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('postcode')):?>
+      Event.observe('billing:postcode', 'change', function () {
+        save_address_information(save_address_url);
+      });
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('postcode')):?>
+      if ($('shipping:postcode')) {
+        Event.observe('shipping:postcode', 'change', function () {
+          save_address_information(save_address_url);
+        });
+      }
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('state/region')):?>
+      if ($('billing:region')) {
+        Event.observe('billing:region', 'change', function () {
+          save_address_information(save_address_url);
+        });
+      }
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('state/region')):?>
+      if ($('billing:region_id')) {
+        Event.observe('billing:region_id', 'change', function () {
+          save_address_information(save_address_url);
+        });
+      }
+      <?php endif;?>
+
+    <?php if ($this->isEnabledField('state/region')):?>
+      if ($('shipping:region_id')) {
+        Event.observe('shipping:region_id', 'change', function () {
+          save_address_information(save_address_url);
+        });
+      }
+      <?php endif;?>
+    <?php endif;?>
+
+  if ($('payment-tool-tip-close')) {
+    Event.observe($('payment-tool-tip-close'), 'click', toggleToolTip);
+  }
+
+  function toggleToolTip(event) {
+    if ($('payment-tool-tip')) {
+      $('payment-tool-tip').setStyle({
+        left: (Event.pointerX(event) - 300) + 'px',
+        top: (Event.pointerY(event) - 250) + 'px'
+      });
+      $('payment-tool-tip').toggle();
+    }
+    Event.stop(event);
+  }
+
+  $$('.cvv-what-is-this').each(function (element) {
+    Event.observe(element, 'click', toggleToolTip);
+  });
+
+  //handle event for clicking Place Order button
+  Event.observe('simplecheckout-button-place-order', 'click', function (e) {
+    var form = new VarienForm('simplecheckout-form');
+    var validator = new Validation(this.form);
+    if (validator.validate() && validate_shipping() && validate_payment()) {
+      var element = e.element();
+      //disable the button
+      element.disabled = true;
+      $('simplecheckout-form').submit();
+    }
+  });
+
+  Event.observe('login-form-button', 'click', function (e) {
+    var login_form = new VarienForm('mini-login-form', true);
+    var validator = new Validation(this.form);
+    if (validator.validate()) {
+      login_user();
+    }
+  });
+  //]]>
+
+  //Xboy update add couponcode
+  function updateCouponCode() {
+    var coupcon_discount = $('coupon_code').value;
+    if (coupcon_discount) {
+      $('coupon_code_message').update('');
+      jQuery('.input-coupon-code').removeClass('valid-false');
+      save_couponcode_method(url_update_coupon_code, coupcon_discount, cancel = false);
+    } else {
+      status = 'error';
+      jQuery('.input-coupon-code').addClass('valid-false');
+      // showMessageForCouponcode('', status = 'error');
+    }
+  }
+
+  function cancelCouponcode() {
+    save_couponcode_method(url_update_coupon_code, coupcon_discount = '', cancel = true);
+  }
+  // end update
+
+
+  // update delivery Time
+  <?php if($helper->isEnableDelivery()):?>  
+    <?php  
+      $numberPeriod = $helper->getNumberPeriod();
+      $formatDate = $helper->getDeliveryFormatDate();
+      $weekendDay = $helper->getDeliveryWeekendDay();
+      $nationalDay = $helper->getDisableday()    ;
+    ?>
+    jQuery(function() {
+      var numberPeriod = "<?php echo $numberPeriod;?>";
+      var formatDate = "<?php echo $formatDate;?>";
+      var weekendDay = '<?php echo $weekendDay;?>'; 
+      var nationalDay = '<?php echo $nationalDay?>'
+      if(numberPeriod<=0){    
+        numberPeriod = '5W';
+      }else{  
+        numberPeriod = numberPeriod+'W' ;
+      }  
+
+      jQuery( "#datepicker" ).datepicker({     
+        selectOtherMonths: true ,
+        minDate: 0, 
+        beforeShowDay: noWeekendsOrHolidays,
+        maxDate: numberPeriod ,
+        dateFormat: formatDate, 
+      });  
+
+      var natDays = nationalDay.split(",");
+
+      function noWeekendsOrHolidays(date) {
+        var noWeekend = noWeekendDay(date);      
+        if (noWeekend[0]) {
+          return nationalDays(date);
+        } else {
+          return noWeekend;
+        }
+      }   
+
+      function nationalDays(date) {
+        for (i = 0; i < natDays.length; i++) {
+          var naDay = natDays[i];        
+          if(naDay.toString != "undefined"){          
+            var arrayNa = naDay.split("/");
+            if (date.getMonth() == arrayNa[0]-1 && date.getDate() == arrayNa[1]) {
+              return [false, ''];
+            }
+          }
+        }
+        return [true, ''];
+      }
+
+      function noWeekendDay(date){      
+        var arrDay=weekendDay.split(",");
+        var day = date.getDay();      
+        for (i = 0; i < arrDay.length; i++) {
+          if (date.getDay() == arrDay[i]) {
+            return [false, ''];
+          }
+        }
+        return [true, ''];
+      };   
+    });
+
+    function selectMessage() {
+      var selectBox = $("comment_eg");
+      var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+      $('id_comments').value=selectedValue;
+    }
+    <?php endif;?>
+  // end update Delivery
+</script>

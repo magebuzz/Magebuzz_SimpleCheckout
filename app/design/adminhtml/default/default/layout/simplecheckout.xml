@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<layout>
+  <adminhtml_sales_order_view>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_view>    
+  <adminhtml_sales_order_invoice_new>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_invoice_new>   
+  
+  <adminhtml_sales_order_invoice_view>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_invoice_view> 
+  
+   <adminhtml_sales_order_shipment_new>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_shipment_new> 
+  <adminhtml_sales_order_shipment_view>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_shipment_view>
+  
+  <adminhtml_sales_order_creditmemo_new>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_creditmemo_new>
+  
+  <adminhtml_sales_order_creditmemo_view>
+    <reference name="order_info">  
+      <action method="setTemplate">
+        <template>simplecheckout/sales/order/info.phtml</template>
+      </action>
+    </reference>
+  </adminhtml_sales_order_creditmemo_view>
+  
+</layout>

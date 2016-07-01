@@ -1,0 +1,48 @@
+<?php
+/*
+* Copyright (c) 2014 www.magebuzz.com
+*/
+?>
+<div class="order-review" id="checkout-review-load">
+  <?php echo $this->getChildHtml('info') ?>
+</div>
+<div class="order-review-bottom">
+  <div class="f-left">
+    <p class="f-left"><?php echo $this->__('Forgot an Item?') ?> <a href="<?php echo $this->getUrl('checkout/cart') ?>"><?php echo $this->__('Edit Your Cart') ?></a></p>
+    <p class="f-left">
+      <input type="checkbox" id="sign-up-newsletter" name="sign-up-newsletter" value="1"/>
+      <label for="sign-up-newsletter"><?php echo $this->__('Sign Up for Our Newsletter');?></label>
+    </p>
+    <!-- Terms & Conditions -->
+    <?php if (Mage::helper('simplecheckout')->isShowTermsConditions()): ?>
+    <div class="terms-conditions-container">
+      <input type="checkbox" class="required-entry" id="term-condition-agreement" name="term-condition-agreement"
+             value="1"/>
+      <label for="term-condition-agreement"><?php echo $this->__('I read and agree to');?> <a href="javascript:void(0);" onclick="fireMyPopup('terms-conditions-content');return false;"><?php echo $this->__('terms
+          & conditions');?></a>.</label>
+
+      <div class="terms-conditions-content" id="terms-conditions-content" style="display:none;">
+        <div class="close-popup"><img src="<?php echo $this->getSkinUrl('magebuzz/simplecheckout/images/soc-remove-product.png'); ?>"
+                                      alt="<?php echo $this->__('Close popup'); ?>"
+                                      onclick="close_popup('terms-conditions-content')"/></div>
+        <div class="content">
+          <?php if(Mage::helper('simplecheckout')->getTermsConditions()):?>
+            <?php echo Mage::helper('simplecheckout')->getTermsConditions(); ?>
+          <?php else:?>
+            <?php echo $this->__('No Content');?>
+          <?php endif;?>
+        </div>
+      </div>
+    </div>
+    <?php endif; ?>
+    <p><button id="simplecheckout-button-place-order" type="button" title="<?php echo $this->__('Place Order Now') ?>" class="button right"><span><span><span><?php echo $this->__('Place Order Now') ?></span></span></span></button></p>
+  </div>
+<!-- End Add Coupon Code -->
+<!-- Order Comment -->
+<?php if (Mage::helper('simplecheckout')->enableOrderComment()): ?>
+  <div class="f-left order-comment-container">
+    <h4><?php echo $this->__('Comment'); ?></h4>
+    <textarea name="customer_order_comment"></textarea>
+  </div>
+<?php endif; ?>
+</div>
